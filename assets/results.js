@@ -76,6 +76,7 @@
     var labels = [
       "OpenCode · Xianix · Sol",
       "OpenCode · Anthropic · Sol",
+      "OpenCode · Xianix · Sonnet 5.5",
       "Claude · Xianix · Sonnet 5.5",
     ];
     el.innerHTML = runs
@@ -145,8 +146,8 @@
           "</code></td></tr>" +
           "<tr><th>Repo / PR</th><td><code>" +
           escapeHtml(r.repo) +
-          "</code> · pr-number=" +
-          r.pr +
+          "</code>" +
+          (r.pr != null ? " · pr-number=" + r.pr : "") +
           "</td></tr>" +
           "<tr><th>Duration</th><td>" +
           duration +

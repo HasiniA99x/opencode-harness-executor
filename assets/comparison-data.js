@@ -171,7 +171,7 @@ window.COMPARISON = (function () {
     },
   ];
 
-  /** OpenCode harness comparison (plugin flexibility demo; not a plugin bake-off). */
+  /** OpenCode harness comparison (plugins + models flexibility; not a bake-off). */
   var OPENCODE_HARNESS_RUNS = [
     {
       title: "OpenCode + Xianix pr-reviewer",
@@ -200,6 +200,20 @@ window.COMPARISON = (function () {
       costUsd: 0.0032,
       tokens: "in=3 · out=21 · cacheRead=11272 · cacheCreate=280",
       session: "ses_eca8e6072ffe4f3Kp3ra2ufuYf",
+    },
+    {
+      title: "OpenCode + Xianix pr-reviewer (Sonnet 5.5)",
+      tag: "opencode",
+      exec: "—",
+      label: "github-pr-review-with-plugin-adapter",
+      plugin: "pr-reviewer@xianix-plugins-official",
+      model: "anthropic/claude-sonnet-5-5 — Claude Sonnet 5.5",
+      repo: "HasiniA99x/nextJS-upskill",
+      pr: null,
+      durationSec: 147.0,
+      costUsd: 0.0172,
+      tokens: "in=2 · out=505 · cacheRead=72298 · cacheCreate=1978",
+      session: "—",
     },
     {
       title: "Claude harness + Xianix pr-reviewer",
