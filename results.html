@@ -51,8 +51,8 @@
     <h2>Outcome summary</h2>
     <p class="hint">All finished against the same PR. Cost and quality differ by harness and model routing.</p>
     <div class="summary">
-      <div class="metric"><div class="l">OpenCode · Anthropic · codex</div><div class="v">$0.0129 · 320s</div></div>
       <div class="metric"><div class="l">OpenCode · Xianix · codex</div><div class="v">$0.0059 · 194s</div></div>
+      <div class="metric"><div class="l">OpenCode · Anthropic · codex</div><div class="v">$0.0129 · 320s</div></div>
       <div class="metric"><div class="l">Claude · Xianix · sonnet-4-5</div><div class="v">$1.14 · 298s</div></div>
       <div class="metric"><div class="l">Claude Mod → gpt-5.3-codex</div><div class="v">$0.1402 · 38s</div></div>
     </div>
@@ -67,25 +67,7 @@
   <section class="cards">
     <article class="result-card">
       <header class="rc">
-        <h3>1 · OpenCode + Anthropic code-review</h3>
-        <span class="pill tag-oc">opencode harness</span>
-      </header>
-      <table>
-        <tr><th>Exec</th><td><code>1a954075</code></td></tr>
-        <tr><th>Label</th><td><code>block=github-pr-review-with-plugin-adapter</code></td></tr>
-        <tr><th>Plugin</th><td><code>code-review@claude-code-plugins</code> · marketplace <code>anthropics/claude-code</code></td></tr>
-        <tr><th>Model</th><td><code>openai/gpt-5.3-codex</code></td></tr>
-        <tr><th>Repo / PR</th><td><code>HasiniA99x/nextJS-upskill</code> · pr-number=4</td></tr>
-        <tr><th>Duration</th><td>320.3s</td></tr>
-        <tr><th>Cost</th><td>$0.0129</td></tr>
-        <tr><th>Tokens</th><td>in=485 · out=53 · cacheRead=57856 · cacheCreate=0</td></tr>
-        <tr><th>Session</th><td><code>ses_edf2f250cffeo7919NLQC0Kib0</code></td></tr>
-      </table>
-    </article>
-
-    <article class="result-card">
-      <header class="rc">
-        <h3>2 · OpenCode + Xianix pr-reviewer</h3>
+        <h3>1 · OpenCode + Xianix pr-reviewer</h3>
         <span class="pill tag-oc">opencode harness</span>
       </header>
       <table>
@@ -98,6 +80,24 @@
         <tr><th>Cost</th><td>$0.0059</td></tr>
         <tr><th>Tokens</th><td>in=805 · out=137 · cacheRead=14848 · cacheCreate=0</td></tr>
         <tr><th>Session</th><td><code>ses_ed0e776a0ffeFUxjMk7u5hVVzT</code></td></tr>
+      </table>
+    </article>
+
+    <article class="result-card">
+      <header class="rc">
+        <h3>2 · OpenCode + Anthropic code-review</h3>
+        <span class="pill tag-oc">opencode harness</span>
+      </header>
+      <table>
+        <tr><th>Exec</th><td><code>1a954075</code></td></tr>
+        <tr><th>Label</th><td><code>block=github-pr-review-with-plugin-adapter</code></td></tr>
+        <tr><th>Plugin</th><td><code>code-review@claude-code-plugins</code> · marketplace <code>anthropics/claude-code</code></td></tr>
+        <tr><th>Model</th><td><code>openai/gpt-5.3-codex</code></td></tr>
+        <tr><th>Repo / PR</th><td><code>HasiniA99x/nextJS-upskill</code> · pr-number=4</td></tr>
+        <tr><th>Duration</th><td>320.3s</td></tr>
+        <tr><th>Cost</th><td>$0.0129</td></tr>
+        <tr><th>Tokens</th><td>in=485 · out=53 · cacheRead=57856 · cacheCreate=0</td></tr>
+        <tr><th>Session</th><td><code>ses_edf2f250cffeo7919NLQC0Kib0</code></td></tr>
       </table>
     </article>
 
