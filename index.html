@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Xianix · OpenCode Harness</title>
+<link rel="stylesheet" href="./assets/theme.css" />
+<style>
+  .cols{display:grid; grid-template-columns:1.35fr 1fr; gap:1.5rem;}
+  @media (max-width:900px){ .cols{grid-template-columns:1fr;} }
+  #diagram{width:100%; height:auto; display:block;}
+  .legend{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.7rem; margin-top:1rem;}
+  .legend span{
+    display:block; border:1px solid var(--border); border-radius:9px; padding:.65rem .8rem;
+    background:var(--surface-2);
+  }
+  .legend strong{display:block; font-size:.78rem; margin-bottom:.2rem;}
+  .legend em{font-style:normal; font-size:.74rem; color:var(--muted-2); line-height:1.45;}
+  .status-card{display:grid; gap:.65rem;}
+  .kv{display:grid; grid-template-columns:auto 1fr; gap:.3rem .8rem; font-size:.82rem;}
+  .kv dt{color:var(--muted-2);}
+  .kv dd{margin:0; color:var(--text); word-break:break-all;}
+  pre.log{
+    margin:0; padding:.85rem 1rem; border-radius:8px; background:var(--bg); border:1px solid var(--border);
+    font-size:.75rem; white-space:pre-wrap; word-break:break-word; max-height:220px; overflow:auto; color:var(--muted);
+  }
+  pre.log b{color:var(--text);}
+</style>
+</head>
+<body>
+
+<nav class="site">
+  <a class="brand" href="./index.html"><span class="mark"></span>Xianix · OpenCode Harness</a>
+  <a class="tab" href="./index.html">Live flow</a>
+  <a class="tab" href="./trigger.html">Trigger</a>
+  <a class="tab" href="./rules.html">Rules</a>
+  <a class="tab" href="./executor.html">Executor</a>
+  <a class="tab" href="./plugins.html">Plugins</a>
+  <a class="tab" href="./run.html">Run</a>
+  <a class="tab" href="./setup.html">Setup</a>
+  <span class="spacer"></span>
+  <a class="ext" href="https://hub.docker.com/r/99xio/xianix-executor-opencode" target="_blank" rel="noopener">Docker image ↗</a>
+</nav>
+
+<header>
+  <div class="eyebrow">Static guided demo · no live stack</div>
+  <h1>OpenCode executor end-to-end</h1>
+  <p class="sub">
+    Walk the path from a GitHub PR label through rules matching, the Docker OpenCode harness,
+    Claude plugin install, markdown conversion, and <code>opencode run</code> — without connecting to a real agent.
+  </p>
+  <div class="quicklinks">
+    <a href="./trigger.html"><span class="dot up"></span>Label trigger</a>
+    <a href="./plugins.html"><span class="dot up"></span>Plugin convert</a>
+    <a href="./setup.html"><span class="dot"></span>Try locally</a>
+  </div>
+</header>
+
+<main>
+  <section>
+    <h2>Architecture flow</h2>
+    <p class="hint">Press play to step through a scripted run. Nodes light up in order; nothing is calling a backend.</p>
+    <div class="cols">
+      <div>
+        <svg id="diagram" viewBox="0 0 640 280" role="img" aria-label="OpenCode harness flow diagram">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="var(--edge-idle)" />
+            </marker>
+          </defs>
+          <g class="sn" id="n-label"><rect x="20" y="30" width="120" height="52" rx="10"/><text x="80" y="52" text-anchor="middle">GitHub</text><text class="sub" x="80" y="68" text-anchor="middle">PR label</text></g>
+          <g class="sn" id="n-rules"><rect x="180" y="30" width="120" height="52" rx="10"/><text x="240" y="52" text-anchor="middle">Rules</text><text class="sub" x="240" y="68" text-anchor="middle">match block</text></g>
+          <g class="sn" id="n-docker"><rect x="340" y="30" width="130" height="52" rx="10"/><text x="405" y="52" text-anchor="middle">Container</text><text class="sub" x="405" y="68" text-anchor="middle">OpenCode image</text></g>
+          <g class="sn" id="n-claude"><rect x="20" y="140" width="140" height="52" rx="10"/><text x="90" y="162" text-anchor="middle">Claude CLI</text><text class="sub" x="90" y="178" text-anchor="middle">plugin install</text></g>
+          <g class="sn" id="n-convert"><rect x="200" y="140" width="140" height="52" rx="10"/><text x="270" y="162" text-anchor="middle">Convert</text><text class="sub" x="270" y="178" text-anchor="middle">.md → .opencode</text></g>
+          <g class="sn" id="n-run"><rect x="380" y="140" width="120" height="52" rx="10"/><text x="440" y="162" text-anchor="middle">opencode</text><text class="sub" x="440" y="178" text-anchor="middle">run prompt</text></g>
+          <g class="sn" id="n-envelope"><rect x="520" y="140" width="100" height="52" rx="10"/><text x="570" y="162" text-anchor="middle">JSON</text><text class="sub" x="570" y="178" text-anchor="middle">envelope</text></g>
+
+          <path class="se" id="e1" d="M140 56 H180" marker-end="url(#arr)"/>
+          <path class="se" id="e2" d="M300 56 H340" marker-end="url(#arr)"/>
+          <path class="se" id="e3" d="M405 82 V118 H90 V140" marker-end="url(#arr)"/>
+          <path class="se" id="e4" d="M160 166 H200" marker-end="url(#arr)"/>
+          <path class="se" id="e5" d="M340 166 H380" marker-end="url(#arr)"/>
+          <path class="se" id="e6" d="M500 166 H520" marker-end="url(#arr)"/>
+        </svg>
+        <div class="legend">
+          <span><strong>Claude CLI</strong><em>Only installs marketplace plugins — does not run the prompt.</em></span>
+          <span><strong>OpenCode</strong><em>Runs the model prompt after plugins are converted.</em></span>
+          <span><strong>Static demo</strong><em>Highlights are scripted; no webhook or Temporal calls.</em></span>
+        </div>
+      </div>
+      <div class="status-card">
+        <span class="pill" id="phase-pill">idle</span>
+        <dl class="kv">
+          <dt>Step</dt><dd id="kv-step">—</dd>
+          <dt>Label</dt><dd><code>ai-dlc/pr/pr-review-opencode</code></dd>
+          <dt>Image</dt><dd><code>99xio/xianix-executor-opencode:latest</code></dd>
+          <dt>Model</dt><dd><code>openai/gpt-5.3-codex</code></dd>
+          <dt>Plugin</dt><dd><code>pr-reviewer@xianix-plugins-official</code></dd>
+        </dl>
+        <pre class="log" id="flow-log">Ready. Press Play to walk the harness path.</pre>
+        <div class="actions">
+          <button class="btn" id="btn-play" type="button">Play</button>
+          <button class="btn secondary" id="btn-reset" type="button">Reset</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Narrative</h2>
+    <p class="hint">Same order as a real PR-review OpenCode execution.</p>
+    <ol class="steps" id="narrative">
+      <li data-i="0"><span class="n">1</span><span>GitHub fires a webhook when label <code>ai-dlc/pr/pr-review-opencode</code> is applied (or PR opens/syncs with it).</span></li>
+      <li data-i="1"><span class="n">2</span><span>Agent Knowledge <code>rules.json</code> matches <code>github-pull-request-review-opencode</code>.</span></li>
+      <li data-i="2"><span class="n">3</span><span>Control plane starts Docker image <code>99xio/xianix-executor-opencode:latest</code> with vault secrets.</span></li>
+      <li data-i="3"><span class="n">4</span><span>Inside the container, Claude CLI installs the marketplace plugin and stages <code>installPath</code>.</span></li>
+      <li data-i="4"><span class="n">5</span><span><code>plugin_runtime.py</code> converts Claude <code>.md</code> commands/skills into <code>WORK_DIR/.opencode/</code>.</span></li>
+      <li data-i="5"><span class="n">6</span><span><code>execute_opencode.py</code> runs <code>opencode run</code> with the model and execute-prompt.</span></li>
+      <li data-i="6"><span class="n">7</span><span>Stdout returns a JSON envelope (status, result, tokens) to the agent.</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Message sequence</h2>
+    <p class="hint">Who talks to whom — static illustration of the happy path.</p>
+    <div class="seq">
+      <div class="seq-actors">
+        <span>GitHub</span><span>Xians Server</span><span>the-agent</span><span>OpenCode container</span><span>Claude CLI</span><span>OpenCode</span>
+      </div>
+      <ul class="seq-rows">
+        <li><span class="from">GitHub</span><span class="arr">→</span><span class="to">Server</span><span class="msg">webhook: labeled PR with ai-dlc/pr/pr-review-opencode</span></li>
+        <li><span class="from">Server</span><span class="arr">→</span><span class="to">the-agent</span><span class="msg">forward event to matched activation</span></li>
+        <li><span class="from">the-agent</span><span class="arr">→</span><span class="to">Container</span><span class="msg">docker run executor-image + with-envs + CLAUDE-CODE-PLUGINS</span></li>
+        <li><span class="from">Container</span><span class="arr">→</span><span class="to">Claude CLI</span><span class="msg">marketplace add / plugin install / stage installPath</span></li>
+        <li><span class="from">Container</span><span class="arr">→</span><span class="to">plugin_runtime</span><span class="msg">convert markdown → .opencode overlay</span></li>
+        <li><span class="from">Container</span><span class="arr">→</span><span class="to">OpenCode</span><span class="msg">opencode run --model openai/gpt-5.3-codex</span></li>
+        <li><span class="from">Container</span><span class="arr">→</span><span class="to">the-agent</span><span class="msg">JSON envelope on stdout</span></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Static demo for <a href="https://github.com/HasiniA99x/opencode-harness-executor">opencode-harness-executor</a>. Image: <code>99xio/xianix-executor-opencode</code>.</p>
+</footer>
+
+<script src="./assets/nav.js"></script>
+<script>
+(function () {
+  var steps = [
+    { nodes: ["n-label"], edges: [], pill: "trigger", title: "GitHub label", log: "Webhook: action=labeled, label=ai-dlc/pr/pr-review-opencode" },
+    { nodes: ["n-label", "n-rules"], edges: ["e1"], pill: "match", title: "Rules match", log: "Matched execution: github-pull-request-review-opencode" },
+    { nodes: ["n-rules", "n-docker"], edges: ["e1", "e2"], pill: "prepare", title: "Container start", log: "docker run 99xio/xianix-executor-opencode:latest (prepare-and-execute)" },
+    { nodes: ["n-docker", "n-claude"], edges: ["e1", "e2", "e3"], pill: "plugins", title: "Claude plugin install", log: "claude plugin install pr-reviewer@xianix-plugins-official — stage installPath" },
+    { nodes: ["n-claude", "n-convert"], edges: ["e1", "e2", "e3", "e4"], pill: "convert", title: "Convert markdown", log: "plugin_runtime: commands/agents/skills → WORK_DIR/.opencode/" },
+    { nodes: ["n-convert", "n-run"], edges: ["e1", "e2", "e3", "e4", "e5"], pill: "run", title: "opencode run", log: "opencode run --model openai/gpt-5.3-codex  /pr-review {n}" },
+    { nodes: ["n-run", "n-envelope"], edges: ["e1", "e2", "e3", "e4", "e5", "e6"], pill: "done", title: "JSON envelope", log: '{"status":"completed","harness":"opencode","result":"..."}' }
+  ];
+  var i = -1, timer = null, playing = false;
+  var pill = document.getElementById("phase-pill");
+  var kv = document.getElementById("kv-step");
+  var log = document.getElementById("flow-log");
+  var narrative = document.getElementById("narrative");
+
+  function clear() {
+    document.querySelectorAll(".sn").forEach(function (n) { n.classList.remove("on", "ok"); });
+    document.querySelectorAll(".se").forEach(function (e) { e.classList.remove("on", "ok"); });
+    narrative.querySelectorAll("li").forEach(function (li) { li.classList.remove("active", "done"); });
+  }
+
+  function paint(idx) {
+    clear();
+    if (idx < 0) {
+      pill.textContent = "idle"; pill.className = "pill";
+      kv.textContent = "—";
+      log.textContent = "Ready. Press Play to walk the harness path.";
+      return;
+    }
+    var s = steps[idx];
+    s.nodes.forEach(function (id, j) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add(j === s.nodes.length - 1 ? "on" : "ok");
+    });
+    s.edges.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add("on");
+    });
+    pill.textContent = s.pill;
+    pill.className = "pill " + (idx === steps.length - 1 ? "done" : "active");
+    kv.textContent = (idx + 1) + " / " + steps.length + " — " + s.title;
+    log.innerHTML = "<b>" + s.title + "</b>\n" + s.log;
+    narrative.querySelectorAll("li").forEach(function (li) {
+      var n = +li.getAttribute("data-i");
+      if (n < idx) li.classList.add("done");
+      if (n === idx) li.classList.add("active");
+    });
+  }
+
+  function stop() {
+    playing = false;
+    if (timer) clearTimeout(timer);
+    timer = null;
+    document.getElementById("btn-play").textContent = "Play";
+  }
+
+  function advance() {
+    if (i >= steps.length - 1) { stop(); return; }
+    i += 1;
+    paint(i);
+    if (playing) timer = setTimeout(advance, 1400);
+  }
+
+  document.getElementById("btn-play").addEventListener("click", function () {
+    if (playing) { stop(); return; }
+    playing = true;
+    this.textContent = "Pause";
+    if (i >= steps.length - 1) i = -1;
+    advance();
+  });
+  document.getElementById("btn-reset").addEventListener("click", function () {
+    stop(); i = -1; paint(-1);
+  });
+})();
+</script>
+</body>
+</html>

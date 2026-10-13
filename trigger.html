@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Trigger · OpenCode Harness</title>
+<link rel="stylesheet" href="./assets/theme.css" />
+</head>
+<body>
+<nav class="site">
+  <a class="brand" href="./index.html"><span class="mark"></span>Xianix · OpenCode Harness</a>
+  <a class="tab" href="./index.html">Live flow</a>
+  <a class="tab" href="./trigger.html">Trigger</a>
+  <a class="tab" href="./rules.html">Rules</a>
+  <a class="tab" href="./executor.html">Executor</a>
+  <a class="tab" href="./plugins.html">Plugins</a>
+  <a class="tab" href="./run.html">Run</a>
+  <a class="tab" href="./setup.html">Setup</a>
+  <span class="spacer"></span>
+  <a class="ext" href="https://hub.docker.com/r/99xio/xianix-executor-opencode" target="_blank" rel="noopener">Docker image ↗</a>
+</nav>
+
+<header>
+  <div class="eyebrow">Step 1 · GitHub webhook</div>
+  <h1>What starts an OpenCode review</h1>
+  <p class="sub">
+    The OpenCode PR-review path listens for the label
+    <code>ai-dlc/pr/pr-review-opencode</code> on an open pull request.
+  </p>
+</header>
+
+<main>
+  <section>
+    <h2>Match-any rules</h2>
+    <p class="hint">Any one of these webhook shapes can fire the execution block.</p>
+    <div class="metrics">
+      <div class="metric"><div class="l">Labeled</div><div class="v">action==labeled</div></div>
+      <div class="metric"><div class="l">Opened with label</div><div class="v">action==opened</div></div>
+      <div class="metric"><div class="l">Synchronize</div><div class="v">action==synchronize</div></div>
+    </div>
+    <pre class="code"><span class="c">// rules.json — github-pull-request-review-opencode</span>
+<span class="k">"match-any"</span>: [
+  { <span class="k">"rule"</span>: <span class="s">"action==labeled&&label.name=='ai-dlc/pr/pr-review-opencode'&&pull_request.state=='open'"</span> },
+  { <span class="k">"rule"</span>: <span class="s">"action==opened&&pull_request.labels.*.name=='ai-dlc/pr/pr-review-opencode'&&pull_request.state=='open'"</span> },
+  { <span class="k">"rule"</span>: <span class="s">"action==synchronize&&pull_request.labels.*.name=='ai-dlc/pr/pr-review-opencode'&&pull_request.state=='open'"</span> }
+]</pre>
+  </section>
+
+  <section>
+    <h2>Inputs extracted</h2>
+    <p class="hint">Passed into the execute-prompt as <code>{{pr-number}}</code>.</p>
+    <pre class="code"><span class="k">"use-inputs"</span>: [
+  { <span class="k">"name"</span>: <span class="s">"pr-number"</span>, <span class="k">"value"</span>: <span class="s">"pull_request.number"</span>, <span class="k">"mandatory"</span>: true }
+]</pre>
+    <div class="callout">
+      <b>Not the same as Claude review.</b> The classic Claude executor block uses
+      label <code>ai-dlc/pr/pr-review</code> and image <code>xianix-executor</code>.
+      OpenCode uses <code>…/pr-review-opencode</code> and <code>xianix-executor-opencode</code>.
+    </div>
+  </section>
+
+  <section>
+    <h2>Sequence</h2>
+    <div class="seq">
+      <div class="seq-actors"><span>Human</span><span>GitHub</span><span>Xians webhook</span><span>Agent</span></div>
+      <ul class="seq-rows">
+        <li><span class="from">Human</span><span class="arr">→</span><span class="to">GitHub</span><span class="msg">adds label ai-dlc/pr/pr-review-opencode</span></li>
+        <li><span class="from">GitHub</span><span class="arr">→</span><span class="to">Xians</span><span class="msg">POST pull_request labeled payload</span></li>
+        <li><span class="from">Xians</span><span class="arr">→</span><span class="to">Agent</span><span class="msg">orchestrator evaluates match-any</span></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer><p><a href="./rules.html">Next: Rules →</a></p></footer>
+<script src="./assets/nav.js"></script>
+</body>
+</html>

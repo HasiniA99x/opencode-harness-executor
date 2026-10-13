@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Plugins · OpenCode Harness</title>
+<link rel="stylesheet" href="./assets/theme.css" />
+</head>
+<body>
+<nav class="site">
+  <a class="brand" href="./index.html"><span class="mark"></span>Xianix · OpenCode Harness</a>
+  <a class="tab" href="./index.html">Live flow</a>
+  <a class="tab" href="./trigger.html">Trigger</a>
+  <a class="tab" href="./rules.html">Rules</a>
+  <a class="tab" href="./executor.html">Executor</a>
+  <a class="tab" href="./plugins.html">Plugins</a>
+  <a class="tab" href="./run.html">Run</a>
+  <a class="tab" href="./setup.html">Setup</a>
+  <span class="spacer"></span>
+  <a class="ext" href="https://hub.docker.com/r/99xio/xianix-executor-opencode" target="_blank" rel="noopener">Docker image ↗</a>
+</nav>
+
+<header>
+  <div class="eyebrow">Step 4 · Claude install → OpenCode convert</div>
+  <h1>How plugins become OpenCode skills</h1>
+  <p class="sub">
+    The harness still uses Claude Code CLI for marketplace install, then converts markdown into an OpenCode overlay before the prompt runs.
+  </p>
+</header>
+
+<main>
+  <section>
+    <h2>Pipeline</h2>
+    <p class="hint">From <code>run_prompt.sh</code> + <code>plugin_runtime.py</code>.</p>
+    <ol class="steps">
+      <li class="done"><span class="n">1</span><span><code>claude plugin marketplace remove</code> (stale) then <code>marketplace add</code> (fresh clone).</span></li>
+      <li class="done"><span class="n">2</span><span><code>claude plugin install plugin@marketplace --scope project</code>.</span></li>
+      <li class="done"><span class="n">3</span><span>Read <code>installPath</code> from <code>claude plugin list --json</code> and stage under <code>XIANIX_PLUGINS_DIR/&lt;name&gt;/</code>.</span></li>
+      <li class="done"><span class="n">4</span><span>Convert Claude <code>commands/</code>, <code>agents/</code>, <code>skills/</code> <code>.md</code> → <code>WORK_DIR/.opencode/</code>.</span></li>
+      <li class="done"><span class="n">5</span><span><code>opencode run</code> — not Claude Code — executes the prompt.</span></li>
+    </ol>
+    <pre class="code">claude plugin marketplace add / plugin install
+        ↓ stage installPath
+XIANIX_PLUGINS_DIR/&lt;id&gt;/{commands,agents,skills}
+        ↓ convert .md only
+WORK_DIR/.opencode/{commands,agents,skills}
+        ↓
+opencode run</pre>
+  </section>
+
+  <section>
+    <h2>Plugin id must include the marketplace</h2>
+    <div class="callout warn">
+      <b>Common failure:</b> bare <code>code-review</code> installs as
+      <code>code-review@claude-code-plugins</code>, but staging looks up the bare id →
+      <code>no installPath</code> → empty plugin dir → convert aborts.
+    </div>
+    <pre class="code"><span class="c"># good — Xianix official</span>
+<span class="k">"plugin-name"</span>: <span class="s">"pr-reviewer@xianix-plugins-official"</span>,
+<span class="k">"marketplace"</span>: <span class="s">"xianix-team/plugins-official"</span>
+
+<span class="c"># good — Anthropic bundled marketplace</span>
+<span class="k">"plugin-name"</span>: <span class="s">"code-review@claude-code-plugins"</span>,
+<span class="k">"marketplace"</span>: <span class="s">"anthropics/claude-code"</span></pre>
+  </section>
+
+  <section>
+    <h2>Slash command must match</h2>
+    <div class="metrics">
+      <div class="metric"><div class="l">pr-reviewer</div><div class="v">/pr-review</div></div>
+      <div class="metric"><div class="l">code-review</div><div class="v">/code-review</div></div>
+    </div>
+    <p class="hint" style="margin-top:1rem">The execute-prompt must call the command the converted plugin actually exposes.</p>
+  </section>
+</main>
+
+<footer><p><a href="./run.html">Next: Run →</a></p></footer>
+<script src="./assets/nav.js"></script>
+</body>
+</html>
