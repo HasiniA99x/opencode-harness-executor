@@ -10,11 +10,10 @@
 <nav class="site">
   <a class="brand" href="./index.html"><span class="mark"></span>Xianix · OpenCode Harness</a>
   <a class="tab" href="./index.html">Live flow</a>
-  <a class="tab" href="./trigger.html">Trigger</a>
   <a class="tab" href="./rules.html">Rules</a>
-  <a class="tab" href="./executor.html">Executor</a>
   <a class="tab" href="./plugins.html">Plugins</a>
-  <a class="tab" href="./run.html">Run</a>
+  <a class="tab" href="./models.html">Models</a>
+  <a class="tab" href="./results.html">Results</a>
   <a class="tab" href="./setup.html">Setup</a>
   <span class="spacer"></span>
   <a class="ext" href="https://hub.docker.com/r/99xio/xianix-executor-opencode" target="_blank" rel="noopener">Docker image ↗</a>
@@ -24,7 +23,7 @@
   <div class="eyebrow">Docs only · no live integration on this site</div>
   <h1>How to try it on your stack</h1>
   <p class="sub">
-    Checklist for running a real OpenCode PR review against your Xians agent. This demo site itself stays static.
+    Checklist for a real OpenCode PR review. This demo site stays static.
   </p>
 </header>
 
@@ -35,38 +34,31 @@
   </section>
 
   <section>
-    <h2>2. Tenant secrets (Studio → Settings → Secrets)</h2>
-    <p class="hint">Tenant scope. Keys must match rules exactly (hyphens).</p>
+    <h2>2. Tenant secrets</h2>
+    <p class="hint">Studio → Settings → Secrets · tenant scope · exact key names.</p>
     <div class="metrics">
-      <div class="metric"><div class="l">GITHUB-TOKEN</div><div class="v">PAT with repo access</div></div>
+      <div class="metric"><div class="l">GITHUB-TOKEN</div><div class="v">repo PAT</div></div>
       <div class="metric"><div class="l">OPENAI-API-KEY</div><div class="v">for openai/* models</div></div>
-    </div>
-    <div class="callout warn">
-      If secrets were created under an old encryption key, delete and recreate them under the current Server key.
     </div>
   </section>
 
   <section>
-    <h2>3. Knowledge rules</h2>
+    <h2>3. Knowledge knobs</h2>
     <ol class="steps">
-      <li class="done"><span class="n">1</span><span>Ensure block <code>github-pull-request-review-opencode</code> exists with label <code>ai-dlc/pr/pr-review-opencode</code>.</span></li>
-      <li class="done"><span class="n">2</span><span>Set <code>executor-image</code> to <code>99xio/xianix-executor-opencode:latest</code>.</span></li>
-      <li class="done"><span class="n">3</span><span>Use <code>pr-reviewer@xianix-plugins-official</code> + prompt <code>/pr-review</code>.</span></li>
+      <li class="done"><span class="n">1</span><span>Set <code>executor-image</code> to <code>99xio/xianix-executor-opencode:latest</code>.</span></li>
+      <li class="done"><span class="n">2</span><span>Pick a <code>model</code> (see <a href="./models.html">Models</a>) and matching secret.</span></li>
+      <li class="done"><span class="n">3</span><span>Choose plugin: Xianix <code>/pr-review</code> or Anthropic <code>/code-review</code> (see <a href="./plugins.html">Plugins</a>).</span></li>
     </ol>
   </section>
 
   <section>
     <h2>4. Trigger</h2>
-    <p class="hint">On an open PR, apply label <code>ai-dlc/pr/pr-review-opencode</code>. Watch agent logs for prepare → plugin install → staged → opencode run.</p>
-    <div class="banner">
-      This page does not call GitHub or your agent — it only documents the path.
-    </div>
+    <p class="hint">Apply label <code>ai-dlc/pr/pr-review-opencode</code> on an open PR (or use your Knowledge match rules).</p>
   </section>
 
   <section>
     <h2>View this demo locally</h2>
-    <pre class="code">npx --yes serve .
-<span class="c"># or open index.html in a browser</span></pre>
+    <pre class="code">npx --yes serve .</pre>
   </section>
 </main>
 

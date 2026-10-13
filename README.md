@@ -1,21 +1,20 @@
 # OpenCode Harness Executor — demo site
 
-Static guided walkthrough of the Xianix **OpenCode executor** path:
+Static guided walkthrough of the Xianix **OpenCode executor**:
 
-GitHub label → rules match → Docker image → Claude plugin install → markdown convert → `opencode run` → JSON envelope.
+rules knobs (image / model / plugin) → Docker → Claude plugin install → convert → `opencode run`.
 
-No live agent or API integration — designed for [Vercel](https://vercel.com) static hosting.
+No live agent API — for [Vercel](https://vercel.com) static hosting.
 
 ## Pages
 
 | Page | Topic |
 |------|--------|
 | [index.html](./index.html) | Animated end-to-end flow |
-| [trigger.html](./trigger.html) | Label `ai-dlc/pr/pr-review-opencode` |
-| [rules.html](./rules.html) | Knowledge block fields |
-| [executor.html](./executor.html) | `99xio/xianix-executor-opencode` |
-| [plugins.html](./plugins.html) | Install → stage → convert |
-| [run.html](./run.html) | `opencode run` + envelope |
+| [rules.html](./rules.html) | Interactive `executor-image`, `model`, `plugin`, `marketplace` |
+| [plugins.html](./plugins.html) | Xianix **and** Anthropic marketplace recipes |
+| [models.html](./models.html) | OpenCode `provider/model` options |
+| [results.html](./results.html) | Three real PR #4 run outcomes compared |
 | [setup.html](./setup.html) | Local try checklist |
 
 ## Run locally
@@ -23,8 +22,6 @@ No live agent or API integration — designed for [Vercel](https://vercel.com) s
 ```bash
 npx --yes serve .
 ```
-
-Or open `index.html` directly.
 
 ## Docker image
 
@@ -34,10 +31,8 @@ docker pull 99xio/xianix-executor-opencode:latest
 
 ## Deploy to Vercel
 
-1. Import this GitHub repo in your Vercel team ([hasini-a](https://vercel.com/hasini-a)).
-2. Framework preset: **Other** (static).
-3. Root directory: `.` — no build command required.
+Import this repo under your team → framework **Other** → no build command.
 
-## Source of truth
+## Models
 
-Behaviour is implemented in the Xianix `the-agent` repo under `Executor.OpenCode/` and the OpenCode block in agent Knowledge `rules.json`. This site only documents that path.
+See [OpenCode models docs](https://opencode.ai/docs/models/) — use `provider/model` in rules and inject the matching vault secret.

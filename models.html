@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Models · OpenCode Harness</title>
+<link rel="stylesheet" href="./assets/theme.css" />
+</head>
+<body>
+<nav class="site">
+  <a class="brand" href="./index.html"><span class="mark"></span>Xianix · OpenCode Harness</a>
+  <a class="tab" href="./index.html">Live flow</a>
+  <a class="tab" href="./rules.html">Rules</a>
+  <a class="tab" href="./plugins.html">Plugins</a>
+  <a class="tab" href="./models.html">Models</a>
+  <a class="tab" href="./results.html">Results</a>
+  <a class="tab" href="./setup.html">Setup</a>
+  <span class="spacer"></span>
+  <a class="ext" href="https://opencode.ai/docs/models/" target="_blank" rel="noopener">OpenCode models ↗</a>
+</nav>
+
+<header>
+  <div class="eyebrow">rules.json · model</div>
+  <h1>Models you can run with OpenCode</h1>
+  <p class="sub">
+    OpenCode uses <code>provider/model</code> ids (AI SDK + Models.dev — 75+ providers).
+    Set <code>model</code> on the execution block and inject the matching API key via <code>with-envs</code>.
+    See <a href="https://opencode.ai/docs/models/" target="_blank" rel="noopener">opencode.ai/docs/models</a>.
+  </p>
+</header>
+
+<main>
+  <section>
+    <h2>Recommended for coding + tools</h2>
+    <p class="hint">From OpenCode docs — good at generation and tool calling.</p>
+    <div class="metrics">
+      <div class="metric"><div class="l">OpenAI</div><div class="v">gpt-5.2 · gpt-5.1 Codex</div></div>
+      <div class="metric"><div class="l">Anthropic</div><div class="v">Claude Opus 4.5 · Sonnet 4.5</div></div>
+      <div class="metric"><div class="l">Google</div><div class="v">Gemini 3 Pro</div></div>
+      <div class="metric"><div class="l">Other</div><div class="v">Minimax M2.1 · Zen models</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Example rules.json model values</h2>
+    <pre class="code"><span class="c"># format: provider_id/model_id</span>
+<span class="k">"model"</span>: <span class="s">"openai/gpt-5.3-codex"</span>          <span class="c"># needs OPENAI-API-KEY</span>
+<span class="k">"model"</span>: <span class="s">"openai/gpt-5.2"</span>
+<span class="k">"model"</span>: <span class="s">"openai/gpt-5.1-codex"</span>
+<span class="k">"model"</span>: <span class="s">"anthropic/claude-sonnet-4-5"</span>   <span class="c"># needs ANTHROPIC-API-KEY</span>
+<span class="k">"model"</span>: <span class="s">"anthropic/claude-opus-4-5"</span>
+<span class="k">"model"</span>: <span class="s">"google/gemini-3-pro"</span>          <span class="c"># needs Google credentials</span>
+<span class="k">"model"</span>: <span class="s">"opencode/gpt-5.1-codex"</span>       <span class="c"># OpenCode Zen</span>
+<span class="k">"model"</span>: <span class="s">"lmstudio/google/gemma-3n-e4b"</span> <span class="c"># local via LM Studio</span></pre>
+    <div class="callout">
+      <b>Xianix wiring:</b> the agent passes the rules <code>model</code> into the container as
+      <code>XIANIX-MODEL</code>. Pair it with the right vault secret in <code>with-envs</code>.
+    </div>
+  </section>
+
+  <section>
+    <h2>Variants (optional)</h2>
+    <p class="hint">OpenCode supports reasoning effort / thinking budgets per provider (high, low, max, …). Configure in OpenCode config when you need them; the harness mainly sets the base <code>provider/model</code>.</p>
+  </section>
+</main>
+
+<footer><p><a href="./results.html">Next: Results →</a></p></footer>
+<script src="./assets/nav.js"></script>
+</body>
+</html>
