@@ -12,6 +12,7 @@
     font:inherit; padding:.5rem .65rem; border:1px solid var(--border); border-radius:8px;
     background:var(--bg); color:var(--text);
   }
+  #preview{max-height:70vh; overflow:auto;}
 </style>
 </head>
 <body>
@@ -29,17 +30,17 @@
 
 <header>
   <div class="eyebrow">Knowledge · rules.json</div>
-  <h1>Tune the OpenCode execution block</h1>
+  <h1>github-pull-request-review-opencode</h1>
   <p class="sub">
-    Change <code>executor-image</code>, <code>model</code>, <code>plugin-name</code>, and <code>marketplace</code>.
-    The preview updates live — same knobs you set in agent Knowledge.
+    Full execution block from agent Knowledge. Change <code>executor-image</code>, <code>model</code>,
+    <code>plugin-name</code>, and <code>marketplace</code> — the complete JSON updates live.
   </p>
 </header>
 
 <main>
   <section>
     <h2>Configurable fields</h2>
-    <p class="hint">Defaults match the OpenCode PR-review block (Xianix pr-reviewer + published image).</p>
+    <p class="hint">Everything else (match-any, inputs, with-envs, conversation-key, max-budget) stays as in Knowledge.</p>
     <div class="tune">
       <label>executor-image
         <select id="executor-image">
@@ -73,23 +74,15 @@
       </label>
     </div>
     <div class="callout" style="margin-top:1rem">
-      Pair plugin + slash command: Xianix → <code>/pr-review</code>; Anthropic → <code>/code-review</code>.
-      Matching API keys go in <code>with-envs</code> (e.g. OpenAI models need <code>OPENAI-API-KEY</code>).
+      Pair plugin + slash command: Xianix → <code>/pr-review</code>; Anthropic → <code>/code-review</code>
+      (execute-prompt updates automatically).
     </div>
   </section>
 
   <section>
-    <h2>Live rules.json preview</h2>
-    <p class="hint">Secrets block stays fixed; only the knobs above change.</p>
+    <h2>Full execution block</h2>
+    <p class="hint">Paste-ready Knowledge fragment — same shape as <code>rules.json</code>.</p>
     <pre class="code" id="preview"></pre>
-  </section>
-
-  <section>
-    <h2>Mandatory secrets (unchanged)</h2>
-    <pre class="code"><span class="k">"with-envs"</span>: [
-  { <span class="k">"name"</span>: <span class="s">"GITHUB-TOKEN"</span>, <span class="k">"value"</span>: <span class="s">"secrets.GITHUB-TOKEN"</span>, <span class="k">"mandatory"</span>: true },
-  { <span class="k">"name"</span>: <span class="s">"OPENAI-API-KEY"</span>, <span class="k">"value"</span>: <span class="s">"secrets.OPENAI-API-KEY"</span>, <span class="k">"mandatory"</span>: true }
-]</pre>
   </section>
 </main>
 
@@ -122,22 +115,56 @@
   function render() {
     var plugin = elPlugin.value;
     var prompt = prompts[plugin] || prompts["pr-reviewer@xianix-plugins-official"];
-    preview.textContent =
-      '"use-plugins": [\n' +
-      '  {\n' +
-      '    "plugin-name": "' + plugin + '",\n' +
-      '    "marketplace": "' + elMarket.value + '"\n' +
-      '  }\n' +
-      '],\n' +
-      '"with-envs": [\n' +
-      '  { "name": "GITHUB-TOKEN", "value": "secrets.GITHUB-TOKEN", "mandatory": true },\n' +
-      '  { "name": "OPENAI-API-KEY", "value": "secrets.OPENAI-API-KEY", "mandatory": true }\n' +
-      '],\n' +
-      '"conversation-key": "pull_request.number",\n' +
-      '"model": "' + elModel.value + '",\n' +
-      '"max-budget-usd": 3,\n' +
-      '"executor-image": "' + elImage.value + '",\n' +
-      '"execute-prompt": "' + prompt + '"';
+    var block = {
+      name: "github-pull-request-review-opencode",
+      platform: "github",
+      repository: { url: "repository.clone_url" },
+      "match-any": [
+        {
+          name: "github-pr-opencode-tag-applied",
+          rule: "action==labeled&&label.name=='ai-dlc/pr/pr-review-opencode'&&pull_request.state=='open'"
+        },
+        {
+          name: "github-pr-opened-with-opencode-tag",
+          rule: "action==opened&&pull_request.labels.*.name=='ai-dlc/pr/pr-review-opencode'&&pull_request.state=='open'"
+        },
+        {
+          name: "github-pr-synchronize-with-opencode-tag",
+          rule: "action==synchronize&&pull_request.labels.*.name=='ai-dlc/pr/pr-review-opencode'&&pull_request.state=='open'"
+        }
+      ],
+      "use-inputs": [
+        {
+          name: "pr-number",
+          value: "pull_request.number",
+          mandatory: true
+        }
+      ],
+      "use-plugins": [
+        {
+          "plugin-name": plugin,
+          marketplace: elMarket.value
+        }
+      ],
+      "with-envs": [
+        {
+          name: "GITHUB-TOKEN",
+          value: "secrets.GITHUB-TOKEN",
+          mandatory: true
+        },
+        {
+          name: "OPENAI-API-KEY",
+          value: "secrets.OPENAI-API-KEY",
+          mandatory: true
+        }
+      ],
+      "conversation-key": "pull_request.number",
+      model: elModel.value,
+      "max-budget-usd": 3,
+      "executor-image": elImage.value,
+      "execute-prompt": prompt
+    };
+    preview.textContent = JSON.stringify(block, null, 2);
   }
 
   elPlugin.addEventListener("change", function () { syncMarket(); render(); });
