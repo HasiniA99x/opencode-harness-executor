@@ -23,9 +23,9 @@
   <div class="eyebrow">rules.json · model</div>
   <h1>Models you can run with OpenCode</h1>
   <p class="sub">
-    OpenCode uses <code>provider/model</code> ids (AI SDK + Models.dev — 75+ providers).
+    OpenCode uses <code>provider/model</code> ids.
     Set <code>model</code> on the execution block and inject the matching API key via <code>with-envs</code>.
-    See <a href="https://opencode.ai/docs/models/" target="_blank" rel="noopener">opencode.ai/docs/models</a>.
+    Defaults used in this demo: <code>openai/gpt-6.1-sol</code> and <code>anthropic/claude-sonnet-5-5</code>.
   </p>
 </header>
 
@@ -33,14 +33,13 @@
   <section>
     <h2>Example rules.json model values</h2>
     <pre class="code"><span class="c"># format: provider_id/model_id</span>
-<span class="k">"model"</span>: <span class="s">"openai/gpt-5.3-codex"</span>          <span class="c"># needs OPENAI-API-KEY</span>
-<span class="k">"model"</span>: <span class="s">"openai/gpt-5.2"</span>
-<span class="k">"model"</span>: <span class="s">"openai/gpt-5.1-codex"</span>
-<span class="k">"model"</span>: <span class="s">"anthropic/claude-sonnet-4-5"</span>   <span class="c"># needs ANTHROPIC-API-KEY</span>
-<span class="k">"model"</span>: <span class="s">"anthropic/claude-opus-4-5"</span>
-<span class="k">"model"</span>: <span class="s">"google/gemini-3-pro"</span>          <span class="c"># needs Google credentials</span>
-<span class="k">"model"</span>: <span class="s">"opencode/gpt-5.1-codex"</span>       <span class="c"># OpenCode Zen</span>
-<span class="k">"model"</span>: <span class="s">"lmstudio/google/gemma-3n-e4b"</span> <span class="c"># local via LM Studio</span></pre>
+<span class="k">"model"</span>: <span class="s">"openai/gpt-6-luna"</span>              <span class="c"># GPT-6 Luna · needs OPENAI-API-KEY</span>
+<span class="k">"model"</span>: <span class="s">"openai/gpt-6.1-sol"</span>             <span class="c"># GPT-6.1 Sol (demo default)</span>
+<span class="k">"model"</span>: <span class="s">"openai/gpt-6-astra"</span>             <span class="c"># GPT-6 Astra</span>
+<span class="k">"model"</span>: <span class="s">"anthropic/claude-haiku-5-5"</span>    <span class="c"># Claude Haiku 5.5 · needs ANTHROPIC-API-KEY</span>
+<span class="k">"model"</span>: <span class="s">"anthropic/claude-sonnet-5-5"</span>   <span class="c"># Claude Sonnet 5.5 (demo default)</span>
+<span class="k">"model"</span>: <span class="s">"anthropic/claude-opus-5-5"</span>     <span class="c"># Claude Opus 5.5</span>
+<span class="k">"model"</span>: <span class="s">"google/gemini-3-pro"</span>           <span class="c"># Gemini 3 Pro · needs Google credentials</span></pre>
     <div class="callout">
       <b>Xianix wiring:</b> the agent passes the rules <code>model</code> into the container as
       <code>XIANIX-MODEL</code>. Pair it with the right vault secret in <code>with-envs</code>.

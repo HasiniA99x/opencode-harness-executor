@@ -74,9 +74,9 @@
     if (!el) return;
     var runs = C.OPENCODE_HARNESS_RUNS || [];
     var labels = [
-      "OpenCode · Xianix · codex",
-      "OpenCode · Anthropic · codex",
-      "Claude · Xianix · sonnet-4-5",
+      "OpenCode · Xianix · Sol",
+      "OpenCode · Anthropic · Sol",
+      "Claude · Xianix · Sonnet 5.5",
     ];
     el.innerHTML = runs
       .map(function (r, i) {

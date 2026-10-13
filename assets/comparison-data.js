@@ -171,7 +171,7 @@ window.COMPARISON = (function () {
     },
   ];
 
-  /** Original OpenCode harness comparison (OpenCode + Claude executor; no Mod run). */
+  /** OpenCode harness comparison (plugin flexibility demo; not a plugin bake-off). */
   var OPENCODE_HARNESS_RUNS = [
     {
       title: "OpenCode + Xianix pr-reviewer",
@@ -179,7 +179,7 @@ window.COMPARISON = (function () {
       exec: "49ee4ca5",
       label: "github-pr-review-with-plugin-adapter",
       plugin: "pr-reviewer@xianix-plugins-official",
-      model: "openai/gpt-5.3-codex",
+      model: "openai/gpt-6.1-sol — GPT-6.1 Sol",
       repo: "HasiniA99x/nextJS-upskill",
       pr: 4,
       durationSec: 193.9,
@@ -190,16 +190,16 @@ window.COMPARISON = (function () {
     {
       title: "OpenCode + Anthropic code-review",
       tag: "opencode",
-      exec: "1a954075",
-      label: "github-pr-review-with-plugin-adapter",
+      exec: "05bff7bb",
+      label: "github-pull-request-review-opencode",
       plugin: "code-review@claude-code-plugins",
-      model: "openai/gpt-5.3-codex",
+      model: "openai/gpt-6.1-sol — GPT-6.1 Sol",
       repo: "HasiniA99x/nextJS-upskill",
-      pr: 4,
-      durationSec: 320.3,
-      costUsd: 0.0129,
-      tokens: "in=485 · out=53 · cacheRead=57856 · cacheCreate=0",
-      session: "ses_edf2f250cffeo7919NLQC0Kib0",
+      pr: 17,
+      durationSec: 170.8,
+      costUsd: 0.0032,
+      tokens: "in=3 · out=21 · cacheRead=11272 · cacheCreate=280",
+      session: "ses_eca8e6072ffe4f3Kp3ra2ufuYf",
     },
     {
       title: "Claude harness + Xianix pr-reviewer",
@@ -207,7 +207,7 @@ window.COMPARISON = (function () {
       exec: "3bf030fd",
       label: "github-pr-review-default-executor",
       plugin: "pr-reviewer@xianix-plugins-official",
-      model: "claude-sonnet-4-5",
+      model: "anthropic/claude-sonnet-5-5 — Claude Sonnet 5.5",
       repo: "HasiniA99x/nextJS-upskill",
       pr: 4,
       durationSec: 298.1,
