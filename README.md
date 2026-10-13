@@ -14,7 +14,7 @@ No live agent API — for [Vercel](https://vercel.com) static hosting.
 | [rules.html](./rules.html) | Interactive `executor-image`, `model`, `plugin`, `marketplace` |
 | [plugins.html](./plugins.html) | Xianix **and** Anthropic marketplace recipes |
 | [models.html](./models.html) | OpenCode `provider/model` options |
-| [results.html](./results.html) | Three real PR #4 run outcomes compared |
+| [results.html](./results.html) | OpenCode harness comparison + Claude Mod vs OpenCode multi-model |
 | [setup.html](./setup.html) | Local try checklist |
 
 ## Run locally

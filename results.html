@@ -6,6 +6,38 @@
 <title>Results · OpenCode Harness</title>
 <link rel="stylesheet" href="./assets/theme.css" />
 <style>
+  .summary{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:.75rem; margin-top:1rem;}
+  .summary-card .v.small{font-size:1rem; line-height:1.25;}
+  .summary-card .sc-title{margin-top:.35rem; font-size:.78rem; color:var(--muted);}
+  .tip{position:relative; border-bottom:1px dotted var(--accent); cursor:help; color:var(--accent);}
+  .tip .tip-body{
+    display:none; position:absolute; left:0; top:calc(100% + .4rem); z-index:5; width:min(320px,70vw);
+    padding:.65rem .75rem; border-radius:8px; border:1px solid var(--border); background:var(--surface);
+    color:var(--muted); font-size:.75rem; font-weight:400; box-shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+  .tip:hover .tip-body, .tip:focus .tip-body{display:block;}
+  .filters{display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; margin-bottom:1rem;}
+  .filters .label{font-size:.75rem; color:var(--muted-2); text-transform:uppercase; letter-spacing:.04em;}
+  .table-wrap{overflow-x:auto; margin-top:.75rem;}
+  .lvl{
+    display:inline-block; padding:.12rem .45rem; border-radius:999px; font-size:.7rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:.03em; margin-bottom:.25rem;
+  }
+  .lvl.strong{background:rgba(51,209,157,.15); color:var(--ok);}
+  .lvl.comparable{background:rgba(79,140,255,.15); color:var(--accent);}
+  .lvl.good{background:rgba(246,185,59,.15); color:var(--warn);}
+  .lvl.deeper{background:rgba(138,92,246,.15); color:#c4a8ff;}
+  .rev-cell{font-size:.78rem; color:var(--muted); min-width:11rem; max-width:18rem;}
+  .rev-cell .rev-sum{color:var(--text); line-height:1.4;}
+  .arch-cols{display:grid; grid-template-columns:1fr 1fr; gap:1rem;}
+  @media (max-width:800px){.arch-cols{grid-template-columns:1fr;}}
+  .arch-cols pre{
+    margin:.5rem 0; padding:.7rem .85rem; border-radius:8px; background:var(--bg);
+    border:1px solid var(--border); font-size:.75rem; color:var(--muted); white-space:pre-wrap;
+  }
+  .arch-cols ul{margin:.4rem 0 0; padding-left:1.1rem; font-size:.82rem; color:var(--muted);}
+  .panel{display:none;}
+  .panel.on{display:grid; gap:1.5rem;}
   .cards{display:grid; gap:1.25rem;}
   .result-card{border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--surface-2);}
   .result-card header.rc{
@@ -18,10 +50,10 @@
   .result-card th{width:7.5rem; color:var(--muted-2); font-weight:600; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em;}
   .result-card tr:last-child th,.result-card tr:last-child td{border-bottom:none;}
   .result-card td code{font-size:.78rem;}
-  .summary{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:.75rem; margin-top:1rem;}
   .tag-oc{background:rgba(79,140,255,.15); color:var(--accent);}
   .tag-cl{background:rgba(138,92,246,.15); color:#c4a8ff;}
   .tag-mod{background:rgba(51,209,157,.15); color:var(--ok);}
+  .compare-switch{margin-top:1.1rem;}
 </style>
 </head>
 <body>
@@ -38,120 +70,138 @@
 </nav>
 
 <header>
-  <div class="eyebrow">HasiniA99x/nextJS-upskill · OpenCode runs PR #4 · Claude Mod PR #3</div>
-  <h1>Four completed runs compared</h1>
+  <div class="eyebrow">HasiniA99x/nextJS-upskill · measured POC runs</div>
+  <h1>Results</h1>
   <p class="sub">
-    OpenCode (two plugins) and full Claude harness on PR #4; Claude Code Mod calling
-    <code>gpt-5.3-codex</code> on PR #3 (<code>github-pull-request-review-gpt</code>).
+    Two comparisons: the original OpenCode harness runs, and the multi-model
+    Claude Mod vs OpenCode harness study.
   </p>
+  <div class="compare-switch filters">
+    <span class="label">Comparison</span>
+    <div class="seg" id="compare-seg">
+      <button type="button" data-panel="harness" class="on">OpenCode harness</button>
+      <button type="button" data-panel="mod">Claude Mod vs OpenCode</button>
+    </div>
+  </div>
 </header>
 
 <main>
-  <section>
-    <h2>Outcome summary</h2>
-    <p class="hint">All finished against the same PR. Cost and quality differ by harness and model routing.</p>
-    <div class="summary">
-      <div class="metric"><div class="l">OpenCode · Xianix · codex</div><div class="v">$0.0059 · 194s</div></div>
-      <div class="metric"><div class="l">OpenCode · Anthropic · codex</div><div class="v">$0.0129 · 320s</div></div>
-      <div class="metric"><div class="l">Claude · Xianix · sonnet-4-5</div><div class="v">$1.14 · 298s</div></div>
-      <div class="metric"><div class="l">Claude Mod → gpt-5.3-codex</div><div class="v">$0.1402 · 38s</div></div>
-    </div>
-    <div class="callout ok" style="margin-top:1rem">
-      <b>Takeaway:</b> OpenCode stays cheapest for pure GPT paths. <b>Claude Code Mod</b> calling
-      <code>gpt-5.3-codex</code> was the <b>fastest</b> (38.1s) at $0.1402 split ($0.1241 Claude + $0.0161 GPT) —
-      it found the category issue, but also included some speculative / low-impact findings.
-      Full Claude executor was slowest-cost (~$1.14) on this PR.
-    </div>
-  </section>
+  <!-- ========== OpenCode harness comparison (previous results) ========== -->
+  <div class="panel on" id="panel-harness">
+    <section>
+      <h2>OpenCode harness comparison</h2>
+      <p class="hint">
+        Completed runs · OpenCode (two plugins) and full Claude harness.
+      </p>
+      <div class="summary" id="harness-summary"></div>
+    </section>
 
-  <section class="cards">
-    <article class="result-card">
-      <header class="rc">
-        <h3>1 · OpenCode + Xianix pr-reviewer</h3>
-        <span class="pill tag-oc">opencode harness</span>
-      </header>
-      <table>
-        <tr><th>Exec</th><td><code>49ee4ca5</code></td></tr>
-        <tr><th>Label</th><td><code>block=github-pr-review-with-plugin-adapter</code></td></tr>
-        <tr><th>Plugin</th><td><code>pr-reviewer@xianix-plugins-official</code> · marketplace <code>xianix-team/plugins-official</code></td></tr>
-        <tr><th>Model</th><td><code>openai/gpt-5.3-codex</code></td></tr>
-        <tr><th>Repo / PR</th><td><code>HasiniA99x/nextJS-upskill</code> · pr-number=4</td></tr>
-        <tr><th>Duration</th><td>193.9s</td></tr>
-        <tr><th>Cost</th><td>$0.0059</td></tr>
-        <tr><th>Tokens</th><td>in=805 · out=137 · cacheRead=14848 · cacheCreate=0</td></tr>
-        <tr><th>Session</th><td><code>ses_ed0e776a0ffeFUxjMk7u5hVVzT</code></td></tr>
-      </table>
-    </article>
+    <section class="cards" id="harness-cards"></section>
 
-    <article class="result-card">
-      <header class="rc">
-        <h3>2 · OpenCode + Anthropic code-review</h3>
-        <span class="pill tag-oc">opencode harness</span>
-      </header>
-      <table>
-        <tr><th>Exec</th><td><code>1a954075</code></td></tr>
-        <tr><th>Label</th><td><code>block=github-pr-review-with-plugin-adapter</code></td></tr>
-        <tr><th>Plugin</th><td><code>code-review@claude-code-plugins</code> · marketplace <code>anthropics/claude-code</code></td></tr>
-        <tr><th>Model</th><td><code>openai/gpt-5.3-codex</code></td></tr>
-        <tr><th>Repo / PR</th><td><code>HasiniA99x/nextJS-upskill</code> · pr-number=4</td></tr>
-        <tr><th>Duration</th><td>320.3s</td></tr>
-        <tr><th>Cost</th><td>$0.0129</td></tr>
-        <tr><th>Tokens</th><td>in=485 · out=53 · cacheRead=57856 · cacheCreate=0</td></tr>
-        <tr><th>Session</th><td><code>ses_edf2f250cffeo7919NLQC0Kib0</code></td></tr>
-      </table>
-    </article>
+    <section>
+      <h2>What this proves</h2>
+      <ol class="steps">
+        <li class="done"><span class="n">1</span><span>OpenCode harness is not locked to one marketplace — Anthropic and Xianix plugins both completed.</span></li>
+        <li class="done"><span class="n">2</span><span>Same PR + tenant; swapping plugin / harness is a Knowledge rules change (<code>use-plugins</code>, <code>executor-image</code>, <code>model</code>).</span></li>
+      </ol>
+    </section>
+  </div>
 
-    <article class="result-card">
-      <header class="rc">
-        <h3>3 · Claude harness + Xianix pr-reviewer</h3>
-        <span class="pill tag-cl">claude executor</span>
-      </header>
-      <table>
-        <tr><th>Exec</th><td><code>3bf030fd</code></td></tr>
-        <tr><th>Label</th><td><code>block=github-pr-review-default-executor</code></td></tr>
-        <tr><th>Plugin</th><td><code>pr-reviewer@xianix-plugins-official</code> · Claude executor image</td></tr>
-        <tr><th>Model</th><td><code>claude-sonnet-4-5</code></td></tr>
-        <tr><th>Repo / PR</th><td><code>HasiniA99x/nextJS-upskill</code> · pr-number=4</td></tr>
-        <tr><th>Duration</th><td>298.1s</td></tr>
-        <tr><th>Cost</th><td>$1.1396</td></tr>
-        <tr><th>Tokens</th><td>in=137 · out=12058 · cacheRead=985027 · cacheCreate=117853</td></tr>
-        <tr><th>Session</th><td><code>67da6b4a-8e68-4394-98d4-abadf0c8b81d</code></td></tr>
-      </table>
-    </article>
+  <!-- ========== Claude Mod vs OpenCode harness (multi-model) ========== -->
+  <div class="panel" id="panel-mod">
+    <section>
+      <h2>Claude Mod vs OpenCode harness</h2>
+      <p class="hint">
+        Multi-model comparison on the same PR Review Agent capability.
+        <span id="tip-opencode"></span>
+        vs
+        <span id="tip-delegation"></span>.
+      </p>
+      <div class="summary" id="best-cards"></div>
+    </section>
 
-    <article class="result-card">
-      <header class="rc">
-        <h3>4 · Claude Code Mod → gpt-5.3-codex</h3>
-        <span class="pill tag-mod">claude mod option</span>
-      </header>
-      <table>
-        <tr><th>Exec</th><td><code>3a0eca7d</code></td></tr>
-        <tr><th>Label</th><td><code>block=github-pull-request-review-gpt</code></td></tr>
-        <tr><th>Model</th><td><code>gpt-5.3-codex</code> (via Claude Code Mod)</td></tr>
-        <tr><th>Repo / PR</th><td><code>HasiniA99x/nextJS-upskill</code> · pr-number=3</td></tr>
-        <tr><th>Duration</th><td><b>38.1s</b> (fastest of the four)</td></tr>
-        <tr><th>Claude Cost</th><td>$0.1241</td></tr>
-        <tr><th>GPT Cost</th><td>$0.0161</td></tr>
-        <tr><th>Total Cost</th><td><b>$0.1402</b></td></tr>
-        <tr><th>Tokens</th><td>in=20 · out=654 · cacheRead=26520 · cacheCreate=28121</td></tr>
-        <tr><th>GPT Tokens</th><td>in=3704 · out=1003 · cached=2816 · calls=1</td></tr>
-        <tr><th>Session</th><td><code>09c2db43-3fbb-4afe-91eb-bb88b800822c</code></td></tr>
-      </table>
-    </article>
-  </section>
+    <section>
+      <h2>Architecture</h2>
+      <p class="hint">Factual comparison of the two execution approaches.</p>
+      <div class="arch-cols">
+        <div>
+          <strong>OpenCode Direct</strong>
+          <pre>Agent
+  ↓
+OpenCode
+  ↓
+Selected Model
+  ↓
+Review</pre>
+          <ul>
+            <li>Direct model execution</li>
+            <li>Provider / model flexibility</li>
+            <li>No secondary orchestration model required</li>
+            <li>Plugin capabilities need OpenCode-native representation / adapter</li>
+          </ul>
+        </div>
+        <div>
+          <strong>Claude / Mod Delegation</strong>
+          <pre>Agent
+  ↓
+Claude Code
+  ↓
+Claude Orchestrator
+  ↓
+Mod (GPT) or Claude PR review
+  ↓
+Selected Model
+  ↓
+Result</pre>
+          <ul>
+            <li>Preserves Claude Code execution environment</li>
+            <li>Delegated model can specialize on selected tasks</li>
+            <li>Orchestration remains Claude-based for GPT Mod</li>
+            <li>Introduces orchestration cost and another reasoning layer</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-  <section>
-    <h2>What this proves</h2>
-    <ol class="steps">
-      <li class="done"><span class="n">1</span><span>OpenCode harness is not locked to one marketplace — Anthropic and Xianix plugins both completed.</span></li>
-      <li class="done"><span class="n">2</span><span>Same PR + tenant; swapping plugin / harness is a Knowledge rules change (<code>use-plugins</code>, <code>executor-image</code>, <code>model</code>).</span></li>
-      <li class="done"><span class="n">3</span><span>Claude default executor produced a much larger token footprint and ~$1.14 cost vs &lt;$0.02 on OpenCode for these runs.</span></li>
-      <li class="done"><span class="n">4</span><span><b>Claude Code Mod</b> + <code>gpt-5.3-codex</code> sits in the middle on cost ($0.14), wins on speed (38s), and catches the main issue with some noise in findings.</span></li>
-    </ol>
-  </section>
+    <section>
+      <h2>Same-model comparison</h2>
+      <p class="hint">Filter by model family. Duration, cost, and review-comment level/summary per approach.</p>
+      <div class="filters">
+        <span class="label">Family</span>
+        <div class="seg">
+          <button type="button" data-family="all" class="on">All</button>
+          <button type="button" data-family="gpt">GPT</button>
+          <button type="button" data-family="claude">Claude</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>OpenCode duration</th>
+              <th>Delegation duration</th>
+              <th>OpenCode cost</th>
+              <th>Delegation cost</th>
+              <th>OpenCode review</th>
+              <th>Delegation review</th>
+            </tr>
+          </thead>
+          <tbody id="derived-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
 </main>
 
-<footer><p><a href="./setup.html">Next: Setup →</a></p></footer>
+<footer>
+  <p>
+    Measured POC · <a href="./setup.html">Setup →</a> ·
+    <a href="https://github.com/HasiniA99x/opencode-harness-executor">opencode-harness-executor</a>
+  </p>
+</footer>
 <script src="./assets/nav.js"></script>
+<script src="./assets/comparison-data.js"></script>
+<script src="./assets/results.js"></script>
 </body>
 </html>
